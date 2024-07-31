@@ -10,7 +10,7 @@
 TcpClient::TcpClient(const in_addr_t ip_addr, const uint16_t port) :
 	TcpSocket(ip_addr, port)
 {
-	if (connect(socket_handle, (sockaddr*) &addr, sizeof(addr)) < 0)
+	if (connect(socket_handle, (sockaddr *) &addr, sizeof(addr)) < 0)
 	{
 		throw std::runtime_error("TCP connection failed.");
 	}

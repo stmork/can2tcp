@@ -13,7 +13,7 @@
 TcpSocket::TcpSocket(const in_addr_t ip4_addr, const uint16_t port)
 {
 	socket_handle = socket(AF_INET, SOCK_STREAM, 0);
-	if(socket_handle < 0)
+	if (socket_handle < 0)
 	{
 		throw std::runtime_error("TCP failed.");
 	}
@@ -35,7 +35,7 @@ void TcpSocket::acceptClient()
 	socklen_t   newSockAddrSize = sizeof(newSockAddr);
 	int         newSd = accept(socket_handle, (sockaddr *)&newSockAddr, &newSockAddrSize);
 
-	if(newSd >= 0)
+	if (newSd >= 0)
 	{
 
 	}

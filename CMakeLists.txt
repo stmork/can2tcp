@@ -28,3 +28,8 @@ add_executable(can2tcp ${SOURCES} ${HEADERS}
 )
 
 target_link_libraries(can2tcp)
+
+add_custom_target(astyle
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+	COMMAND astyle --options=.astylerc ${SOURCES} ${HEADERS}
+)

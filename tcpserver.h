@@ -13,10 +13,12 @@
 
 class TcpServer : public TcpSocket,  public ProxyIo
 {
-	int client_fd = 0;
+	int client_fd = -1;
 
 public:
 	explicit TcpServer(const uint16_t port = 7000);
+
+	void acceptClient();
 
 	virtual bool   read(can_frame & frame) override;
 	virtual size_t write(const can_frame & frame) override;

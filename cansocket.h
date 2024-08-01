@@ -8,6 +8,8 @@
 #ifndef CANSOCKET_H
 #define CANSOCKET_H
 
+#include <ostream>
+
 #include "io.h"
 
 class CanSocket : public ProxyIo
@@ -21,5 +23,7 @@ public:
 	virtual bool   read(can_frame & frame) override;
 	virtual size_t write(const can_frame & frame) override;
 };
+
+std::ostream & operator<<(std::ostream & os, const can_frame & frame);
 
 #endif // CANSOCKET_H

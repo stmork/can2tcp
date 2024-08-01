@@ -19,24 +19,10 @@ TcpSocket::TcpSocket(const in_addr_t ip4_addr, const uint16_t port)
 	}
 
 	addr.sin_family      = AF_INET;
-	addr.sin_addr.s_addr = htonl(ip4_addr);
+	addr.sin_addr.s_addr = ip4_addr;
 	addr.sin_port        = htons(port);
 }
 
 TcpSocket::~TcpSocket()
 {
-}
-
-void TcpSocket::acceptClient()
-{
-	listen(socket_handle, 1);
-
-	sockaddr_in newSockAddr{};
-	socklen_t   newSockAddrSize = sizeof(newSockAddr);
-	int         newSd = accept(socket_handle, (sockaddr *)&newSockAddr, &newSockAddrSize);
-
-	if (newSd >= 0)
-	{
-
-	}
 }

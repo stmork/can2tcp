@@ -3,6 +3,7 @@
 //  SPDX-FileCopyrightText: Copyright (C) 2024 Steffen A. Mork
 //
 
+#include <iostream>
 #include <stdexcept>
 
 #include "tcpclient.h"
@@ -14,6 +15,7 @@ TcpClient::TcpClient(const in_addr_t ip_addr, const uint16_t port) :
 	{
 		throw std::runtime_error("TCP connection failed.");
 	}
+	std::cout << "TCP client connected." << std::endl;
 }
 
 bool TcpClient::read(can_frame & frame)

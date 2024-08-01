@@ -3,19 +3,19 @@
 //  SPDX-FileCopyrightText: Copyright (C) 2024 Steffen A. Mork
 //
 
-#include "cansocket.h"
+#include <cstring>
+#include <stdexcept>
+#include <iomanip>
+#include <iostream>
 
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
 #include <linux/can/raw.h>
 
-#include <cstring>
-#include <stdexcept>
-#include <iomanip>
+#include "cansocket.h"
 
 CanSocket::CanSocket(const char * device_name)
 {
@@ -52,10 +52,27 @@ CanSocket::~CanSocket()
 
 bool CanSocket::read(can_frame & frame)
 {
-	return ::read(socket_handle, &frame, sizeof(can_frame)) == sizeof(can_frame);
+	const bool success = ::read(socket_handle, &frame, sizeof(can_frame)) == sizeof(can_frame);
+
+	std::cout << "< " << frame << std::endl;
+	return success;
 }
 
 size_t CanSocket::write(const can_frame & frame)
 {
-	return ::write(socket_handle, &frame, CAN_MTU);
+	const size_t written = ::write(socket_handle, &frame, CAN_MTU);
+
+	std::cout << "> " << frame << std::endl;
+	return written;
+}
+
+std::ostream & operator<<(std::ostream & os, const can_frame & frame)
+{
+	os << std::setfill('0') << std::setw(3) << std::hex << frame.can_id;
+	os << " #";
+	for (int i = 0; i < frame.can_dlc; ++i)
+	{
+		os << " " << std::setw(2) << unsigned(frame.data[i]);
+	}
+	return os;
 }

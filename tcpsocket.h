@@ -15,14 +15,12 @@
 class TcpSocket
 {
 protected:
-	int               socket_handle = 0;
+	int               socket_handle = -1;
 	sockaddr_in       addr{};
 
 public:
 	explicit TcpSocket(const in_addr_t ip4_addr, const uint16_t port = 7000);
 	virtual ~TcpSocket();
-
-	void acceptClient();
 };
 
 #endif

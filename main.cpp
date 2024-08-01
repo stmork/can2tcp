@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 
 #include "cansocket.h"
+#include "options.h"
 #include "tcpclient.h"
 #include "tcpserver.h"
 
@@ -20,17 +21,18 @@ int main(int argc, char * argv[])
 {
 	try
 	{
-		CanSocket can("vcan0");
+		Options   options(argc, argv);
+		CanSocket can(options.getCanDevice());
 
-		if (argc > 1)
+		if (!options.isServer())
 		{
 
 			// Client
-			struct hostent * host      = gethostbyname(argv[1]);
+			struct hostent * host      = gethostbyname(options.getServer());
 			struct in_addr * addr_list = (struct in_addr *) host->h_addr;
 
 			std::cout << "Connecting to: " << inet_ntoa(*addr_list) << std::endl;
-			TcpClient tcp(addr_list->s_addr, 7000);
+			TcpClient tcp(addr_list->s_addr, options.getPort());
 
 			std::thread can2tcp([&]()
 			{
@@ -56,7 +58,7 @@ int main(int argc, char * argv[])
 		else
 		{
 			// Server
-			TcpServer tcp(7000);
+			TcpServer tcp(options.getPort());
 
 			tcp.acceptClient();
 			std::thread can2tcp([&]()

@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.14)
 
 project(can2tcp LANGUAGES CXX)
 
+add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -Wsuggest-override)
+add_compile_options(-fstack-protector-strong)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_CXX_STANDARD 17)

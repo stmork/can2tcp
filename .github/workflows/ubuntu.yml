@@ -1,0 +1,18 @@
+name: Can2TCP tunnel
+on: [push]
+
+jobs:
+  Can2Tcp-Ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update package info
+        run: sudo apt update -y
+      - name: Install needed components
+        run: sudo apt install -y cmake cppcheck
+      - name: CMake
+        run: cmake -B build
+      - name: Build
+        run: make -C build -j `nproc`
+      - name: CPP-Check
+        run: make -C build cppcheck

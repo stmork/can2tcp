@@ -35,3 +35,8 @@ add_custom_target(astyle
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	COMMAND astyle --options=.astylerc ${SOURCES} ${HEADERS}
 )
+
+add_custom_target(cppcheck
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+	COMMAND cppcheck ${SOURCES} ${HEADERS} --language=c++ --std=c++14 -q --xml-version=2 --force 2>cppcheck.xml
+)

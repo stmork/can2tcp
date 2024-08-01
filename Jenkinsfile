@@ -30,6 +30,14 @@ pipeline
 				sh 'make -C build -j `nproc`'
 			}
 		}
+		stage ('CppCheck')
+		{
+			steps
+			{
+				sh 'make -C build cppcheck'
+				publishCppcheck pattern: 'cppcheck.xml'
+			}
+		}
 	}
 
 	post

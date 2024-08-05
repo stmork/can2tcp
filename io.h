@@ -13,12 +13,10 @@
 
 #include <linux/can/raw.h>
 
-typedef std::function<size_t(const can_frame & frame)> IoWriter;
-
 class ProxyIo
 {
 public:
-	void proxy(IoWriter writer);
+	bool proxy(ProxyIo & writer);
 
 
 	virtual bool   read(can_frame & frame) = 0;

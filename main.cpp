@@ -33,23 +33,25 @@ int main(int argc, char * argv[])
 
 			std::cout << "Connecting to: " << inet_ntoa(*addr_list) << std::endl;
 			TcpClient tcp(addr_list->s_addr, options.getPort());
+			bool      can2tcp_loop = true;
+			bool      tcp2can_loop = true;
 
 			std::thread can2tcp([&]()
 			{
 				do
 				{
-					can.proxy(std::bind(&TcpClient::write, &tcp, _1));
+					can2tcp_loop = can.proxy(tcp);
 				}
-				while (true);
+				while (can2tcp_loop && tcp2can_loop);
 			});
 
 			std::thread tcp2can([&]()
 			{
 				do
 				{
-					tcp.proxy(std::bind(&CanSocket::write, &can, _1));
+					tcp2can_loop = tcp.proxy(can);
 				}
-				while (true);
+				while (can2tcp_loop && tcp2can_loop);
 			});
 
 			can2tcp.join();
@@ -59,24 +61,26 @@ int main(int argc, char * argv[])
 		{
 			// Server
 			TcpServer tcp(options.getPort());
+			bool      can2tcp_loop = true;
+			bool      tcp2can_loop = true;
 
 			tcp.acceptClient();
 			std::thread can2tcp([&]()
 			{
 				do
 				{
-					can.proxy(std::bind(&TcpServer::write, &tcp, _1));
+					can2tcp_loop = can.proxy(tcp);
 				}
-				while (true);
+				while (can2tcp_loop && tcp2can_loop);
 			});
 
 			std::thread tcp2can([&]()
 			{
 				do
 				{
-					tcp.proxy(std::bind(&CanSocket::write, &can, _1));
+					tcp2can_loop = tcp.proxy(can);
 				}
-				while (true);
+				while (can2tcp_loop && tcp2can_loop);
 			});
 
 			can2tcp.join();

@@ -5,12 +5,14 @@
 
 #include "io.h"
 
-void ProxyIo::proxy(IoWriter writer)
+bool ProxyIo::proxy(ProxyIo & writer)
 {
-	can_frame frame{};
+	can_frame  frame{};
+	const bool received = read(frame);
 
-	if (read(frame))
+	if (received)
 	{
-		writer(frame);
+		writer.write(frame);
 	}
+	return received;
 }

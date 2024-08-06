@@ -17,9 +17,12 @@ class TcpServer : public TcpSocket,  public ProxyIo
 
 public:
 	explicit TcpServer(const uint16_t port = 7000);
+	virtual ~TcpServer();
 
 	void acceptClient();
+	void closeClient();
 
+	virtual int    poll(const std::chrono::milliseconds timeout) override;
 	virtual bool   read(can_frame & frame) override;
 	virtual size_t write(const can_frame & frame) override;
 };

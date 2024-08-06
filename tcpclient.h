@@ -16,6 +16,7 @@ class TcpClient : public TcpSocket,  public ProxyIo
 public:
 	explicit TcpClient(const in_addr_t ip_addr, const uint16_t port = 7000);
 
+	virtual int    poll(const std::chrono::milliseconds timeout) override;
 	virtual bool   read(can_frame & frame) override;
 	virtual size_t write(const can_frame & frame) override;
 };

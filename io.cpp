@@ -7,12 +7,21 @@
 
 bool ProxyIo::proxy(ProxyIo & writer)
 {
-	can_frame  frame{};
-	const bool received = read(frame);
+	const int count = poll();
 
-	if (received)
+	if (count > 0)
 	{
-		writer.write(frame);
+		can_frame  frame{};
+
+		if (read(frame))
+		{
+			return writer.write(frame) > 0;
+		}
 	}
-	return received;
+	else if (count == 0)
+	{
+		// Timeout. Everything looks fine.
+		return true;
+	}
+	return false;
 }

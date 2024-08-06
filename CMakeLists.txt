@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
 	main.cpp
+	exception.cpp
 	io.cpp
 	cansocket.cpp
 	options.cpp
@@ -22,6 +23,7 @@ set(SOURCES
 
 set(HEADERS
 	cansocket.h
+	exception.h
 	io.h
 	options.h
 	tcpclient.h

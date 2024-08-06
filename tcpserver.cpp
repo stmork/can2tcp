@@ -4,26 +4,32 @@
 //
 
 #include <iostream>
-#include <stdexcept>
 
 #include <netinet/in.h>
 #include <unistd.h>
+#include <poll.h>
 
+#include "exception.h"
 #include "tcpserver.h"
 
 TcpServer::TcpServer(const uint16_t port) : TcpSocket(INADDR_ANY, port)
 {
 	if (bind(socket_handle, (struct sockaddr *)&addr, sizeof(addr)) != 0)
 	{
-		throw std::runtime_error("Bind failed.");
+		throw Exception("Bind failed", errno);
 	}
 
 	if (listen(socket_handle, 1) != 0)
 	{
-		throw std::runtime_error("Listen failed!");
+		throw Exception("Listen failed", errno);
 	}
 
 	std::cout << "TCP server listening." << std::endl;
+}
+
+TcpServer::~TcpServer()
+{
+	close(client_fd);
 }
 
 void TcpServer::acceptClient()
@@ -34,9 +40,26 @@ void TcpServer::acceptClient()
 	client_fd = accept(socket_handle, (sockaddr *)&newSockAddr, &newSockAddrSize);
 	if (client_fd < 0)
 	{
-		throw std::runtime_error("Accept failed!");
+		throw Exception("Accept failed", errno);
 	}
 	std::cout << "TCP client accepted." << std::endl;
+}
+
+void TcpServer::closeClient()
+{
+	close(client_fd);
+	client_fd = -1;
+}
+
+int TcpServer::poll(const std::chrono::milliseconds timeout)
+{
+	struct pollfd descriptor {};
+
+	descriptor.events  = POLLIN;
+	descriptor.revents = 0;
+	descriptor.fd      = client_fd;
+
+	return ::poll(&descriptor, 1, timeout.count());
 }
 
 bool TcpServer::read(can_frame & frame)

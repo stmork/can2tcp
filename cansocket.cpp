@@ -4,7 +4,6 @@
 //
 
 #include <cstring>
-#include <stdexcept>
 #include <iomanip>
 #include <iostream>
 
@@ -12,10 +11,12 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <unistd.h>
 #include <linux/can/raw.h>
+#include <unistd.h>
+#include <poll.h>
 
 #include "cansocket.h"
+#include "exception.h"
 
 CanSocket::CanSocket(const char * device_name)
 {
@@ -25,14 +26,14 @@ CanSocket::CanSocket(const char * device_name)
 	socket_handle = socket(PF_CAN, SOCK_RAW, CAN_RAW);
 	if (socket_handle < 0)
 	{
-		throw std::runtime_error("CAN failed.");
+		throw Exception("CAN failed", errno);
 	}
 
 	strncpy(ifr.ifr_name, device_name, sizeof(ifr.ifr_name) - 1);
 	if (ioctl(socket_handle, SIOCGIFINDEX, &ifr) != 0)
 	{
 		close(socket_handle);
-		throw std::runtime_error("Socket failed.");
+		throw Exception("CAN socket failed", errno);
 	}
 
 	addr.can_family  = AF_CAN;
@@ -41,13 +42,24 @@ CanSocket::CanSocket(const char * device_name)
 	if (bind(socket_handle, (struct sockaddr *)&addr, sizeof(addr)) != 0)
 	{
 		close(socket_handle);
-		throw std::runtime_error("Bind failed.");
+		throw Exception("CAN bind failed", errno);
 	}
 }
 
 CanSocket::~CanSocket()
 {
 	close(socket_handle);
+}
+
+int CanSocket::poll(const std::chrono::milliseconds timeout)
+{
+	struct pollfd descriptor {};
+
+	descriptor.events  = POLLIN;
+	descriptor.revents = 0;
+	descriptor.fd      = socket_handle;
+
+	return ::poll(&descriptor, 1, timeout.count());
 }
 
 bool CanSocket::read(can_frame & frame)

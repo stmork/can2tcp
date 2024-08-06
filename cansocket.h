@@ -20,6 +20,7 @@ public:
 	explicit CanSocket(const char * device_name);
 	virtual ~CanSocket();
 
+	virtual int    poll(const std::chrono::milliseconds timeout) override;
 	virtual bool   read(can_frame & frame) override;
 	virtual size_t write(const can_frame & frame) override;
 };

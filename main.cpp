@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 
 #include "cansocket.h"
+#include "exception.h"
 #include "options.h"
 #include "tcpclient.h"
 #include "tcpserver.h"
@@ -29,6 +30,12 @@ int main(int argc, char * argv[])
 
 			// Client
 			struct hostent * host      = gethostbyname(options.getServer());
+
+			if (host == nullptr)
+			{
+				throw Exception("TCP server not found", errno);
+			}
+
 			struct in_addr * addr_list = (struct in_addr *) host->h_addr;
 
 			std::cout << "Connecting to: " << inet_ntoa(*addr_list) << std::endl;
@@ -85,6 +92,7 @@ int main(int argc, char * argv[])
 
 			can2tcp.join();
 			tcp2can.join();
+			tcp.closeClient();
 		}
 
 		return EXIT_SUCCESS;

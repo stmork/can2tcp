@@ -5,7 +5,6 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <thread>
 
 #include <netdb.h>
 #include <arpa/inet.h>
@@ -15,6 +14,7 @@
 #include "options.h"
 #include "tcpclient.h"
 #include "tcpserver.h"
+#include "tcpconnection.h"
 
 using namespace std::placeholders;
 
@@ -29,7 +29,7 @@ int main(int argc, char * argv[])
 		{
 
 			// Client
-			struct hostent * host      = gethostbyname(options.getServer());
+			struct hostent * host = gethostbyname(options.getServer());
 
 			if (host == nullptr)
 			{
@@ -39,60 +39,25 @@ int main(int argc, char * argv[])
 			struct in_addr * addr_list = (struct in_addr *) host->h_addr;
 
 			std::cout << "Connecting to: " << inet_ntoa(*addr_list) << std::endl;
-			TcpClient tcp(addr_list->s_addr, options.getPort());
-			bool      can2tcp_loop = true;
-			bool      tcp2can_loop = true;
+			TcpClient  tcp(addr_list->s_addr, options.getPort());
+			Connection connection(can, tcp);
 
-			std::thread can2tcp([&]()
-			{
-				do
-				{
-					can2tcp_loop = can.proxy(tcp);
-				}
-				while (can2tcp_loop && tcp2can_loop);
-			});
-
-			std::thread tcp2can([&]()
-			{
-				do
-				{
-					tcp2can_loop = tcp.proxy(can);
-				}
-				while (can2tcp_loop && tcp2can_loop);
-			});
-
-			can2tcp.join();
-			tcp2can.join();
+			connection.loop();
 		}
 		else
 		{
 			// Server
 			TcpServer tcp(options.getPort());
-			bool      can2tcp_loop = true;
-			bool      tcp2can_loop = true;
 
-			tcp.acceptClient();
-			std::thread can2tcp([&]()
+			do
 			{
-				do
-				{
-					can2tcp_loop = can.proxy(tcp);
-				}
-				while (can2tcp_loop && tcp2can_loop);
-			});
+				Connection connection(can, tcp);
 
-			std::thread tcp2can([&]()
-			{
-				do
-				{
-					tcp2can_loop = tcp.proxy(can);
-				}
-				while (can2tcp_loop && tcp2can_loop);
-			});
-
-			can2tcp.join();
-			tcp2can.join();
-			tcp.closeClient();
+				tcp.acceptClient();
+				connection.loop();
+				tcp.closeClient();
+			}
+			while (true);
 		}
 
 		return EXIT_SUCCESS;

@@ -16,6 +16,7 @@ set(SOURCES
 	io.cpp
 	cansocket.cpp
 	options.cpp
+	tcpconnection.cpp
 	tcpclient.cpp
 	tcpserver.cpp
 	tcpsocket.cpp
@@ -26,6 +27,7 @@ set(HEADERS
 	exception.h
 	io.h
 	options.h
+	tcpconnection.h
 	tcpclient.h
 	tcpserver.h
 	tcpsocket.h

@@ -14,17 +14,17 @@
 class Options
 {
 	uint16_t     port = 7000;
-	std::string  server;
+	std::string  remote_server;
 	std::string  can;
 
 public:
 	Options() = delete;
 	explicit Options(int argc, char * argv[]);
 
-	uint16_t getPort() const;
 	const char * getCanDevice() const;
-	const char * getServer() const;
-	bool isServer() const;
+	uint16_t     getPort() const;
+	const char * getRemoteServer() const;
+	bool         isRemoteServer() const;
 };
 
 #endif // OPTIONS_H

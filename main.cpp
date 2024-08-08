@@ -25,11 +25,11 @@ int main(int argc, char * argv[])
 		Options   options(argc, argv);
 		CanSocket can(options.getCanDevice());
 
-		if (!options.isServer())
+		if (!options.isRemoteServer())
 		{
 
 			// Client
-			struct hostent * host = gethostbyname(options.getServer());
+			struct hostent * host = gethostbyname(options.getRemoteServer());
 
 			if (host == nullptr)
 			{

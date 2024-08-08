@@ -24,7 +24,7 @@ Options::Options(int argc, char * argv[]) : can("vcan0")
 			can.assign(optarg);
 			break;
 		case 's':
-			server.assign(optarg);
+			remote_server.assign(optarg);
 			break;
 
 		default:
@@ -47,12 +47,12 @@ const char * Options::getCanDevice() const
 	return can.c_str();
 }
 
-const char * Options::getServer() const
+const char * Options::getRemoteServer() const
 {
-	return server.c_str();
+	return remote_server.c_str();
 }
 
-bool Options::isServer() const
+bool Options::isRemoteServer() const
 {
-	return server.empty();
+	return remote_server.empty();
 }

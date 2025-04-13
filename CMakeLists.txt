@@ -33,8 +33,7 @@ set(HEADERS
 	tcpsocket.h
 )
 
-add_executable(can2tcp ${SOURCES} ${HEADERS}
-)
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 target_link_libraries(can2tcp)
 
@@ -46,4 +45,10 @@ add_custom_target(astyle
 add_custom_target(cppcheck
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	COMMAND cppcheck ${SOURCES} ${HEADERS} --language=c++ --std=c++14 -q --xml-version=2 --force 2>cppcheck.xml
+)
+
+set_property(
+	TARGET cppcheck
+	APPEND
+	PROPERTY ADDITIONAL_CLEAN_FILES ${CMAKE_SOURCE_DIR}/cppcheck.xml
 )

@@ -1,6 +1,6 @@
 //
 //  SPDX-License-Identifier: MIT
-//  SPDX-FileCopyrightText: Copyright (C) 2024 Steffen A. Mork
+//  SPDX-FileCopyrightText: Copyright (C) 2024 - 2026  Steffen A. Mork
 //
 
 pipeline
@@ -20,14 +20,14 @@ pipeline
 		{
 			steps
 			{
-				sh 'cmake -B build'
+				sh 'cmake -B build -DCMAKE_BUILD_TYPE=Release'
 			}
 		}
 		stage ('Build')
 		{
 			steps
 			{
-				sh 'make -C build -j `nproc`'
+				sh 'cmake --build build --parallel'
 			}
 		}
 		stage ('CppCheck')
@@ -38,10 +38,22 @@ pipeline
 				publishCppcheck pattern: 'cppcheck.xml'
 			}
 		}
+
+		stage('Package')
+		{
+			steps
+			{
+				sh "cpack --config build/CPackConfig.cmake"
+			}
+		}
 	}
 
 	post
 	{
+		success
+		{
+			archiveArtifacts artifacts: '*.deb', followSymlinks: false
+		}
 		always
 		{
 			chuckNorris()
